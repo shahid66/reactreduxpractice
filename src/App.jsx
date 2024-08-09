@@ -1,35 +1,44 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useDispatch, useSelector } from "react-redux";
+import "./App.css";
+import Counter from "./components/Counter";
+import Posts from "./components/Posts";
+import Stats from "./components/Stats";
+import { decrement, increment } from "./features/counters/counterSlice";
 
 function App() {
-  const [count, setCount] = useState(0)
+  const counters = useSelector((state) => state.counters);
+  const dispatch = useDispatch();
+
+  const totalCount = counters.reduce((sum, current) => sum + current.value, 0);
+
+  const handleIncrement = (id) => {
+    dispatch(increment(id));
+  };
+  const handleDecrement = (id) => {
+    dispatch(decrement(id));
+  };
 
   return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+    <div className="w-screen h-screen p-10 bg-gray-100 text-slate-700">
+      <h1 className="max-w-md mx-auto text-center text-2xl font-bold">
+        Simple Counter Application
+      </h1>
+
+      <div className="max-w-md mx-auto mt-10 space-y-5">
+        {counters.map((counter) => (
+          <Counter
+            count={counter.value}
+            key={counter.id}
+            onIncrement={() => handleIncrement(counter.id)}
+            onDecrement={() => handleDecrement(counter.id)}
+          />
+        ))}
+        <Stats totalCount={totalCount} />
+
+        <Posts />
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    </div>
+  );
 }
 
-export default App
+export default App;
